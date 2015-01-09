@@ -22,7 +22,7 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("SPORTS",$SPORTS,$pluginName);
 	WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
 	WriteSettingToFile("SEPARATOR",urlencode($_POST["SEPARATOR"]),$pluginName);
-
+	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
 }
 
 	
@@ -31,11 +31,16 @@ if(isset($_POST['submit']))
 	
 	$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
 	$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
-
+	$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
 	if($SEPARATOR == "") {
 		$SEPARATOR="|";
 	}
 	//echo "sports read: ".$SPORTS."<br/> \n";
+	
+
+	if((int)$LAST_READ == 0 || $LAST_READ == "") {
+		$LAST_READ=0;
+	}
 ?>
 
 <html>
@@ -68,6 +73,7 @@ if(isset($_POST['submit']))
 
 
 <?
+echo "<input type=\"hidden\" name=\"LAST_READ\" value=\"".$LAST_READ."\"> \n";
 
 $restart=0;
 $reboot=0;

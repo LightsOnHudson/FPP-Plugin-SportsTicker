@@ -21,7 +21,7 @@ $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
 $messageQueuePluginPath = $pluginDirectory."/".$messageQueue_Plugin."/";
 
-$messageQueueFile = "/tmp/FPP.MessageQueue";
+$messageQueueFile = urldecode(ReadSettingFromFile("MESSAGE_FILE",$messageQueue_Plugin));
 
 if(file_exists($messageQueuePluginPath."functions.inc.php"))
 	{
@@ -101,19 +101,20 @@ for($i=0;$i<=count($SPORTS_READ)-1;$i++) {
 		}
 
 		if(trim($right) !="") {
-			$messageText .= $right." | ";
+			$messageText .= " ".$SEPARATOR." ".$right;
 		}
 	}
 	}
 	
 	//there gets some ^ in the output.. erase them!
 	$messageText = preg_replace('/\^/', '', $messageText);
+	$messageText = preg_replace('/\s[a]t\s/', ' @ ', $messageText);
 	
 	if(trim($messageText) == "" ) {
 		$messageLine = $SPORTS_READ[$i]." - No Scores Availble";
 	} else {
 	
-		$messageLine = $SPORTS_READ[$i]. " ".$SEPARATOR." ".$messageText;
+		$messageLine = $SPORTS_READ[$i]." ".$messageText;
 	}
 	addNewMessage($messageLine,$pluginName,$pluginData=$SPORTS_READ[$i]);
 	$messageText="";
