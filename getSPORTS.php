@@ -11,10 +11,25 @@ $MESSAGE_QUEUE_PLUGIN_ENABLED=false;
 $DEBUG=false;
 
 $skipJSsettings = 1;
-include_once("/opt/fpp/www/config.php");
-include_once("/opt/fpp/www/common.php");
+require_once("/opt/fpp/www/config.php");
+require_once("/opt/fpp/www/common.php");
+//include_once("/opt/fpp/www/plugin.php");
+
 include_once("functions.inc.php");
 include_once "SPORTS.inc.php";
+require ("lock.helper.php");
+
+define('LOCK_DIR', '/tmp/');
+define('LOCK_SUFFIX', '.lock');
+
+
+
+$pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
+if (file_exists($pluginConfigFile))
+	$pluginSettings = parse_ini_file($pluginConfigFile);
+
+
+//print_r($pluginSettings);
 
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
@@ -22,6 +37,11 @@ $logFile = $settings['logDirectory']."/".$pluginName.".log";
 $messageQueuePluginPath = $pluginDirectory."/".$messageQueue_Plugin."/";
 
 $messageQueueFile = urldecode(ReadSettingFromFile("MESSAGE_FILE",$messageQueue_Plugin));
+
+if(($pid = lockHelper::lock()) === FALSE) {
+	exit(0);
+
+}
 
 if(file_exists($messageQueuePluginPath."functions.inc.php"))
 	{
@@ -40,19 +60,32 @@ if(file_exists($messageQueuePluginPath."functions.inc.php"))
 //	logEntry("MessageQueue plugin is not enabled/installed");
 //}	
 
+//	print_r($pluginSettings);
+//	echo "\n";
+	
+	//$SPORTS = urldecode(ReadSettingFromFile("SPORTS",$pluginName));
+	$SPORTS = urldecode($pluginSettings['SPORTS']);
+	
+	//$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
+	$ENABLED = urldecode($pluginSettings['ENABLED']);
+	
+	//$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
+	$SEPARATOR = urldecode($pluginSettings['SEPARATOR']);
+	
+	//$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
+	$LAST_READ = $pluginSettings['LAST_READ'];
 
-$SPORTS=ReadSettingFromFile("SPORTS",$pluginName);
-
-$ENABLED = trim(urldecode(ReadSettingFromFile("ENABLED",$pluginName)));
-
+	//echo "enabled: ".$ENABLED."\n";
+	
 //echo "ENABLED: ".$ENABLED."\n";
-if($ENABLED != "on" && $ENABLED != "1") {
+if($ENABLED != "1") {
 	logEntry("Plugin Status: DISABLED Please enable in Plugin Setup to use & Restart FPPD Daemon");
-
+	lockHelper::unlock();
 	exit(0);
+	
 }
 
-$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
+//$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
 
 $SPORTS_READ = explode(",",$SPORTS);
 
@@ -134,4 +167,5 @@ function search_in_array($value, $arr){
 	}
 	return $num ;
 }
+lockHelper::unlock();
 ?>

@@ -36,14 +36,22 @@ if(isset($_POST['submit']))
 	WriteSettingToFile("SEPARATOR",urlencode($_POST["SEPARATOR"]),$pluginName);
 	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
 }
+//print_r($pluginSettings);
 
 	
 	
-	$SPORTS = urldecode(ReadSettingFromFile("SPORTS",$pluginName));
+	//$SPORTS = urldecode(ReadSettingFromFile("SPORTS",$pluginName));
+	$SPORTS = urldecode($pluginSettings['SPORTS']);
 	
-	$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
-	$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
-	$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
+	//$ENABLED = urldecode(ReadSettingFromFile("ENABLED",$pluginName));
+	$ENABLED = urldecode($pluginSettings['ENABLED']);
+	
+	//$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
+	$SEPARATOR = urldecode($pluginSettings['SEPARATOR']);
+	
+	//$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
+	$LAST_READ = $pluginSettings['LAST_READ'];
+	
 	if($SEPARATOR == "") {
 		$SEPARATOR="|";
 	}
@@ -81,7 +89,7 @@ if(isset($_POST['submit']))
 
 
 
-<form method="post" action="http://<? echo $_SERVER['SERVER_NAME']?>/plugin.php?plugin=<?echo $pluginName;?>&page=plugin_setup.php">
+<form method="post" action="http://<? echo $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT']?>/plugin.php?plugin=<?echo $pluginName;?>&page=plugin_setup.php">
 
 
 <?
@@ -92,7 +100,7 @@ $reboot=0;
 
 echo "ENABLE PLUGIN: ";
 
-if($ENABLED== 1 || $ENABLED == "on") {
+if($ENABLED == "1") {
 		echo "<input type=\"checkbox\" checked name=\"ENABLED\"> \n";
 //PrintSettingCheckbox("Radio Station", "ENABLED", $restart = 0, $reboot = 0, "ON", "OFF", $pluginName = $pluginName, $callbackName = "");
 	} else {
