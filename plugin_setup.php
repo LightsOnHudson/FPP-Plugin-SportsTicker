@@ -8,6 +8,7 @@ include_once "functions.inc.php";
 include_once "SPORTS.inc.php";
 
 $pluginName = "SportsTicker";
+$pluginUpdateFile = $settings['pluginDirectory']."/".$pluginName."/"."pluginUpdate.inc";
 
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
@@ -106,9 +107,16 @@ echo "<input type=\"text\" name=\"SEPARATOR\" size=\"3\" value=\"".$SEPARATOR."\
 <p/>
 <input id="submit_button" name="submit" type="submit" class="buttons" value="Save Config">
 
+
+<?
+ if(file_exists($pluginUpdateFile))
+ {
+ 	//echo "updating plugin included";
+	include $pluginUpdateFile;
+}
+
+?>
 </form>
-
-
 <p>To report a bug, please file it against the sms Control plugin project on Git: https://github.com/LightsOnHudson/FPP-Plugin-SportsTicker
 
 </fieldset>
