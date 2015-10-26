@@ -3,16 +3,27 @@
 
 include_once "/opt/fpp/www/common.php";
 include_once "functions.inc.php";
+include_once "commonFunctions.inc.php";
 
 //include the array of sports
 include_once "SPORTS.inc.php";
 
 $pluginName = "SportsTicker";
+
 $pluginUpdateFile = $settings['pluginDirectory']."/".$pluginName."/"."pluginUpdate.inc";
 
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
+logEntry("plugin update file: ".$pluginUpdateFile);
+
+if(isset($_POST['updatePlugin']))
+{
+	logEntry("updating plugin...");
+	$updateResult = updatePluginFromGitHub($gitURL, $branch="master", $pluginName);
+
+	echo $updateResult."<br/> \n";
+}
 
 if(isset($_POST['submit']))
 {
