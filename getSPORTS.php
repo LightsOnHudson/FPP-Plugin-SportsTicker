@@ -144,7 +144,7 @@ for($i=0;$i<=count($SPORTS_READ)-1;$i++) {
 	$messageText = preg_replace('/\s[a]t\s/', ' @ ', $messageText);
 	
 	if(trim($messageText) == "" ) {
-		$messageLine = $SPORTS_READ[$i]." - No Scores Availble";
+		$messageLine = $SPORTS_READ[$i]." - No Scores Available";
 	} else {
 	
 		$messageLine = $SPORTS_READ[$i]." ".$messageText;
