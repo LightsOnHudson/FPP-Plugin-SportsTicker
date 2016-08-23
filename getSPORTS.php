@@ -20,7 +20,7 @@ include_once "SPORTS.inc.php";
 require ("lock.helper.php");
 
 define('LOCK_DIR', '/tmp/');
-define('LOCK_SUFFIX', '.lock');
+define('LOCK_SUFFIX', $pluginName.'.lock');
 
 
 
@@ -78,7 +78,7 @@ if(file_exists($messageQueuePluginPath."functions.inc.php"))
 	//echo "enabled: ".$ENABLED."\n";
 	
 //echo "ENABLED: ".$ENABLED."\n";
-if($ENABLED != "1") {
+if($ENABLED != "ON") {
 	logEntry("Plugin Status: DISABLED Please enable in Plugin Setup to use & Restart FPPD Daemon");
 	lockHelper::unlock();
 	exit(0);

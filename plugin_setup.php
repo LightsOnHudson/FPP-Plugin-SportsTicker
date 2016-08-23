@@ -32,7 +32,7 @@ if(isset($_POST['submit']))
 //	echo "Writring config fie <br/> \n";
 	
 	WriteSettingToFile("SPORTS",$SPORTS,$pluginName);
-	WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
+	//WriteSettingToFile("ENABLED",urlencode($_POST["ENABLED"]),$pluginName);
 	WriteSettingToFile("SEPARATOR",urlencode($_POST["SEPARATOR"]),$pluginName);
 	WriteSettingToFile("LAST_READ",urlencode($_POST["LAST_READ"]),$pluginName);
 }
@@ -100,12 +100,12 @@ $reboot=0;
 
 echo "ENABLE PLUGIN: ";
 
-if($ENABLED == "1") {
-		echo "<input type=\"checkbox\" checked name=\"ENABLED\"> \n";
-//PrintSettingCheckbox("Radio Station", "ENABLED", $restart = 0, $reboot = 0, "ON", "OFF", $pluginName = $pluginName, $callbackName = "");
-	} else {
-		echo "<input type=\"checkbox\"  name=\"ENABLED\"> \n";
-}
+//if($ENABLED == "1") {
+//		echo "<input type=\"checkbox\" checked name=\"ENABLED\"> \n";
+PrintSettingCheckbox("Sports Ticker", "ENABLED", $restart = 0, $reboot = 0, "ON", "OFF", $pluginName = $pluginName, $callbackName = "");
+//	} else {
+//		echo "<input type=\"checkbox\"  name=\"ENABLED\"> \n";
+//}
 
 echo "<p/> \n";
 
