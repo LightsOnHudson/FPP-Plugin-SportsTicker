@@ -9,6 +9,9 @@ include_once "commonFunctions.inc.php";
 include_once "SPORTS.inc.php";
 
 $pluginName = "SportsTicker";
+$pluginVersion ="2.0";
+
+$Plugin_DBName = "/tmp/FPP.".$pluginName.".db";
 
 $pluginUpdateFile = $settings['pluginDirectory']."/".$pluginName."/"."pluginUpdate.inc";
 
@@ -61,6 +64,8 @@ if(isset($_POST['submit']))
 	if((int)$LAST_READ == 0 || $LAST_READ == "") {
 		$LAST_READ=0;
 	}
+	$db = new SQLite3($Plugin_DBName) or die('Unable to open database');
+	createSportsTickerTables($db);
 ?>
 
 <html>
@@ -69,7 +74,7 @@ if(isset($_POST['submit']))
 
 <div id="<?echo $pluginName;?>" class="settings">
 <fieldset>
-<legend><?php echo $pluginName;?> Support Instructions</legend>
+<legend><?php echo $pluginName." Version: ".$pluginVersion;?> Support Instructions</legend>
 
 <p>Known Issues:
 <ul>

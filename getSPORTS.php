@@ -7,8 +7,11 @@ $myPid = getmypid();
 
 $messageQueue_Plugin = "MessageQueue";
 $MESSAGE_QUEUE_PLUGIN_ENABLED=false;
+$SportsTickerPluginVersion = "2.0";
 
 $DEBUG=false;
+
+//$Plugin_DBName = "/tmp/FPP.".$pluginName.".db";
 
 $skipJSsettings = 1;
 require_once("/opt/fpp/www/config.php");
@@ -75,7 +78,12 @@ if(file_exists($messageQueuePluginPath."functions.inc.php"))
 	//$LAST_READ = urldecode(ReadSettingFromFile("LAST_READ",$pluginName));
 	$LAST_READ = $pluginSettings['LAST_READ'];
 
+	$DEBUG = urldecode($pluginSettings['DEBUG']);
 	//echo "enabled: ".$ENABLED."\n";
+	
+	if($DEBUG) {
+		echo "Debug is on \n";
+	}
 	
 //echo "ENABLED: ".$ENABLED."\n";
 if($ENABLED != "ON") {
@@ -85,73 +93,116 @@ if($ENABLED != "ON") {
 	
 }
 
+$MESSAGE_FILE = urldecode($pluginSettings['MESSAGE_FILE']);
+
+if(trim($MESSAGE_FILE) == "") {
+	$MESSAGE_FILE = "/home/fpp/media/config/FPP.".$pluginName.".db";
+}
+
+
+// set up DB connection
+$MESSAGE_FILE= $settings['configDirectory']."/FPP.".$pluginName.".db";
+
+//echo "PLUGIN DB:NAME: ".$Plugin_DBName;
+
+$db = new SQLite3($MESSAGE_FILE) or die('Unable to open database');
+
+//create the tables if not exist
+createTables();
+
 //$SEPARATOR = urldecode(ReadSettingFromFile("SEPARATOR",$pluginName));
 
 $SPORTS_READ = explode(",",$SPORTS);
 
-//echo "Incoming sports reading: \n";
-//print_r($SPORTS_READ);
-//print_r($SPORTS_DATA_ARRAY);
-
+if($DEBUG) {
+	echo "Incoming sports reading: \n";
+	print_r($SPORTS_READ);
+	print_r($SPORTS_DATA_ARRAY);
+}
 $messageText="";
 
 
+
 for($i=0;$i<=count($SPORTS_READ)-1;$i++) {
-	//echo "Retrieving data for: ".$SPORTS_READ[$i]."\n";
+	if($DEBUG)
+		echo "Retrieving data for: ".$SPORTS_READ[$i]."\n";
 	
-	if( search_in_array($SPORTS_READ[$i],$SPORTS_DATA_ARRAY) > 0) {
+	foreach($SPORTS_DATA_ARRAY as $sport) {
 		
+		if($DEBUG) {
+			echo "Sport: ".print_r($sportLink)."\n";
+			echo "sport incomining from array: ".$sport[0]."\n";
+		}
 		//echo $SPORTS_READ[$i]. " is in Sports data array\n";
 			
 		//fetch the information
-		$sportsScores = file_get_contents($SPORTS_DATA_ARRAY[$i][1]);
+		//echo "sprots data array: ".$SPORTS_DATA_ARRAY[$i][1]."\n";
+		if($sport[0] == $SPORTS_READ[$i]) {
+			if($DEBUG) {
+				print_r($sport);
+				echo "Getting scores from: ".$sport[1]."\n";
+			}
+			$sportsScores = file_get_contents($sport[1]);
 		
+			//echo $sportsScores;
+
+			$sportData= json_decode($sportsScores, TRUE);
+		} else {
+			if($DEBUG)
+			echo "Not a match \n";
+			
+			continue;
+		}
 		
-
-
-	$new = str_replace('&',"|",$sportsScores);
-	//$new = str_replace('&',"|",$output);
-
-	$stats = explode('&',$sportsScores);
-
-//print_r($stats);
-
-	foreach($stats as $item) {
-
-		$split = explode("=",$item);
-
-		$left = $split[0];
-		$right = (string)urldecode($split[1]);
-
-
-		if(substr($left,0,10) == strtolower($SPORTS_READ[$i]."_s_left")) {
-
-		//echo $right."<br/>";
-	//echo $split[0]." --- ".$right."<br/>";
-
-		if(substr($right,0,1) == "^") {
-			$right = substr($right,1);
+	
+		if($DEBUG) {
+			echo "Game try array: ".$sportData['data']['games']['game'][0]['location']."\n";
+			$DAY_GAME_COUNT = count($sportData['data']['games']['game']);
+			echo "Day game count: ".$DAY_GAME_COUNT."\n";
 		}
-
-		if(trim($right) !="") {
-			$messageText .= " ".$SEPARATOR." ".$right;
+		
+		foreach($sportData['data']['games']['game'] as $game) {
+			//print_r($game);
+			if($DEBUG) {
+				echo "Home Code: ".$game['home_code']." Team Name: ".$game['home_team_name']."   Away Code: ".$game['away_code']."  Away Team name: ".$game['away_team_name']."\n";
+			    echo "Game Time: ".$game['time']."\n";
+			}
+		    $homeScore = 0;
+		    $awayScore = 0;
+		    //get the inning score and add up the totals
+		    foreach($game['linescore']['inning'] as $inning) {
+		    	
+		    	$homeScore += $inning['home'];
+		    	$awayScore += $inning['away'];
+		    }
+		    
+		    if($DEBUG) {
+			    echo "Home Score: ".$homeScore."\n";
+			    echo "Away Score: ".$awayScore."\n";
+		    }
+		    
+		    $table = "messages";
+		    $messageText = $game['home_team_name']." ".$homeScore." ".$game['away_team_name']." ".$awayScore;
+		    //insertMessage($Plugin_DBName, $table, $messageText, $pluginName, $pluginData=$SPORTS_READ[$i]);
+		    addNewMessage($messageText,$pluginName,$pluginData=$SPORTS_READ[$i], $MESSAGE_FILE);
+		    $messageText="";
+		    $messageLine="";
 		}
-	}
-	}
+		
+		foreach($sportData['data']['games']['game'] as $game) {
+			if($DEBUG)
+			print_r($game);
+			//echo "Home Code: ".$game['home_code']."   Away Code: ".$game['away_code']."\n";
+		}
+		if($DEBUG) {
+			print_r($sportData);
+		}
 	
-	//there gets some ^ in the output.. erase them!
-	$messageText = preg_replace('/\^/', '', $messageText);
-	$messageText = preg_replace('/\s[a]t\s/', ' @ ', $messageText);
 	
-	if(trim($messageText) == "" ) {
-		$messageLine = $SPORTS_READ[$i]." - No Scores Available";
-	} else {
+
+	//addNewMessage($messageLine,$pluginName,$pluginData=$SPORTS_READ[$i]);
 	
-		$messageLine = $SPORTS_READ[$i]." ".$messageText;
-	}
-	addNewMessage($messageLine,$pluginName,$pluginData=$SPORTS_READ[$i]);
-	$messageText="";
-	$messageLine="";
+	
 	}
 	
 }

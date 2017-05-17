@@ -1,5 +1,18 @@
 <?php
 
+//create database
+function createSportsTickerTables($db) {
+	//global $db;
+
+
+
+	$createQuery = "CREATE TABLE IF NOT EXISTS messages (messageID INTEGER PRIMARY KEY AUTOINCREMENT, timestamp int(16) NOT NULL, message varchar(255), pluginName varchar(64), pluginData varchar(64));";
+
+	logEntry("SPORTS TICKER: CREATING Messages Table for SPORTS TICKER: ".$createQuery);
+
+	$db->exec($createQuery) or die('Create Table Failed');
+
+}
 function printSportsOptions()
 
 
