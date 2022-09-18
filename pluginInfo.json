@@ -1,0 +1,23 @@
+{
+	"repoName": "FPP-Plugin-SportsTicker",
+	"name": "SportsTicker",
+	"author": "Ben Shaver",
+	"description": "Sports Ticker",
+	"homeURL": "https://github.com/LightsOnHudson/FPP-Plugin-SportsTicker",
+	"srcURL": "https://github.com/LightsOnHudson/FPP-Plugin-SportsTicker.git",
+	"bugURL": "https://github.com/LightsOnHudson/FPP-Plugin-SportsTicker/issues",
+	"allowUpdates": 1,
+	"versions": [
+		{
+			"minFPPVersion": "5.0",
+			"maxFPPVersion": "0",
+			"branch": "main",
+			"sha": "",
+			"dependencies": {
+			    "plugins": [],
+			    "packages": [],
+				"scripts": []
+			}
+		}
+	]
+}
