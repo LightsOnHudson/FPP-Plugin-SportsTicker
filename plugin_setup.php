@@ -8,13 +8,15 @@ include_once "commonFunctions.inc.php";
 //include the array of sports
 include_once "SPORTS.inc.php";
 
-$pluginName = "SportsTicker";
-$pluginVersion ="2.0";
+//$pluginName = "SportsTicker";  //pjd 9/19/2022  updateing for fpp 6.0
+//$pluginVersion ="2.0";         //pjd 9/19/2022  updateing for fpp 6.0
+
+// pat added 9/19/2022
+$pluginName = basename(dirname(__FILE__));  //pjd 7-10-2019   added per dkulp 
+$pluginVersion ="6.0";         //pjd 9/19/2022  updateing for fpp 6.0
 
 $Plugin_DBName = "/tmp/FPP.".$pluginName.".db";
-
 $pluginUpdateFile = $settings['pluginDirectory']."/".$pluginName."/"."pluginUpdate.inc";
-
 
 $logFile = $settings['logDirectory']."/".$pluginName.".log";
 
